@@ -27,7 +27,6 @@ dotenv.config();
     StoresModule,
     PricesModule,
   ],
-  providers: [DatabaseSeeder],
 
 })
 export class AppModule { }
