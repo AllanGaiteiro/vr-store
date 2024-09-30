@@ -7,24 +7,20 @@ import { Store } from './stores/store.entity';
 import { Product } from './products/product.entity';
 import { Price } from './prices/price.entity';
 import * as dotenv from 'dotenv';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import typeorm from './config/typeorm';
 
 dotenv.config();
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      ...(process.env.DATABASE_URL
-        ? { url: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } }
-        : {
-            host: process.env.DB_HOST,
-            port: parseInt(process.env.DB_PORT, 10) || 5432,
-            username: process.env.DB_USER,
-            password: process.env.DB_PASSWORD,
-            database: process.env.DB_NAME,
-          }),
-      entities: [Product, Store, Price],
-      synchronize: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [typeorm]
+    }),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => (configService.get('typeorm'))
     }),
     TypeOrmModule.forFeature([Product, Store, Price]),
     ProductsModule,
