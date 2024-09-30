@@ -15,7 +15,7 @@ export class PricesController {
   @ApiResponse({
     status: 200,
     description: 'Lista de preços retornada com sucesso.',
-    type: [Price], // O tipo de retorno é uma lista de preços
+    type: [Price],
   })
   async findAll(): Promise<Price[]> {
     return this.pricesService.findAll();
@@ -27,7 +27,7 @@ export class PricesController {
   @ApiResponse({
     status: 200,
     description: 'Preço retornado com sucesso.',
-    type: Price, // Tipo de dado retornado
+    type: Price, 
   })
   @ApiResponse({
     status: 404,
@@ -56,7 +56,7 @@ export class PricesController {
   @Patch(':id')
   @ApiOperation({ summary: 'Atualizar um preço pelo ID' })
   @ApiParam({ name: 'id', description: 'O ID do preço a ser atualizado' })
-  @ApiBody({ type: UpdatePriceDto, description: 'Dados para atualizar o preço' }) // Descreve o corpo da requisição
+  @ApiBody({ type: UpdatePriceDto, description: 'Dados para atualizar o preço' })
   @ApiResponse({
     status: 200,
     description: 'Preço atualizado com sucesso.',
