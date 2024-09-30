@@ -7,7 +7,7 @@ import { Store } from './stores/store.entity';
 import { Product } from './products/product.entity';
 import { Price } from './prices/price.entity';
 import * as dotenv from 'dotenv';
-import { DatabaseSeeder } from './database/database.seeder';
+
 dotenv.config();
 
 @Module({
