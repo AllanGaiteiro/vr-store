@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Body, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Put, Delete, HttpCode } from '@nestjs/common';
 import { StoresService } from './stores.service';
 import { Store } from './store.entity';
 import { CreateStoreDto } from './dto/create-store.dto';
@@ -70,10 +70,11 @@ export class StoresController {
   }
 
   @Delete(':id')
+  @HttpCode(204) 
   @ApiOperation({ summary: 'Remover uma loja pelo ID' })
   @ApiParam({ name: 'id', description: 'O ID da loja a ser removida' })
   @ApiResponse({
-    status: 200,
+    status: 204,
     description: 'Loja removida com sucesso.',
   })
   @ApiResponse({

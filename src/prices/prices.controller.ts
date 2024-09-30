@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Body, Patch, Delete, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Patch, Delete, NotFoundException, HttpCode } from '@nestjs/common';
 import { PricesService } from './prices.service';
 import { CreatePriceDto } from './dto/create-price.dto';
 import { UpdatePriceDto } from './dto/update-price.dto';
@@ -70,10 +70,11 @@ export class PricesController {
   }
 
   @Delete(':id')
+  @HttpCode(204) 
   @ApiOperation({ summary: 'Remover um preço pelo ID' })
   @ApiParam({ name: 'id', description: 'O ID do preço a ser removido' })
   @ApiResponse({
-    status: 200,
+    status: 204,
     description: 'Preço removido com sucesso.',
   })
   @ApiResponse({

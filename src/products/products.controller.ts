@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Body, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Delete, HttpCode } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { Product } from './product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -33,10 +33,11 @@ export class ProductsController {
   }
 
   @Delete(':id')
+  @HttpCode(204) 
   @ApiOperation({ summary: 'Remover um produto por ID' })
   @ApiParam({ name: 'id', description: 'O ID do produto a ser removido' })
   @ApiResponse({
-    status: 200,
+    status: 204,
     description: 'Produto removido com sucesso.',
   })
   @ApiResponse({
