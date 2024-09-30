@@ -14,19 +14,22 @@ dotenv.config();
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT, 10) || 5432,
-      username: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
+      ...(process.env.DATABASE_URL
+        ? { url: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } }
+        : {
+            host: process.env.DB_HOST,
+            port: parseInt(process.env.DB_PORT, 10) || 5432,
+            username: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
+          }),
       entities: [Product, Store, Price],
-      synchronize: true, // Use apenas em desenvolvimento, desativar em produção
+      synchronize: true,
     }),
     TypeOrmModule.forFeature([Product, Store, Price]),
     ProductsModule,
     StoresModule,
     PricesModule,
   ],
-
 })
-export class AppModule { }
+export class AppModule {}
