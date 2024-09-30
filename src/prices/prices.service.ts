@@ -4,30 +4,53 @@ import { Repository } from 'typeorm';
 import { Price } from './price.entity';
 import { CreatePriceDto } from './dto/create-price.dto';
 import { UpdatePriceDto } from './dto/update-price.dto';
+import { Product } from 'src/products/product.entity';
+import { Store } from 'src/stores/store.entity';
 
 @Injectable()
 export class PricesService {
     constructor(
         @InjectRepository(Price)
         private priceRepository: Repository<Price>,
+        @InjectRepository(Product)
+        private productRepository: Repository<Product>,
+        @InjectRepository(Store)
+        private storeRepository: Repository<Store>,
     ) { }
 
     async create(createPriceDto: CreatePriceDto): Promise<Price> {
-        const price = this.priceRepository.create(createPriceDto);
+        const { productId, storeId, priceValue } = createPriceDto;
+
+        const product = await this.productRepository.findOne({ where: { id: productId } });
+        if (!product) {
+            throw new NotFoundException(`Product with ID ${productId} not found`);
+        }
+
+        const store = await this.storeRepository.findOne({ where: { id: storeId } });
+        if (!store) {
+            throw new NotFoundException(`Store with ID ${storeId} not found`);
+        }
+
+        const price = this.priceRepository.create({
+            priceValue,
+            product,
+            store,
+        });
+
         return this.priceRepository.save(price);
     }
 
     async findAll(): Promise<Price[]> {
-        return this.priceRepository.find();
+        return this.priceRepository.find({ relations: ['product', 'store'] });
     }
 
     async findOne(id: number): Promise<Price> {
-        const price = await this.priceRepository.findOne({ where: { id } });
+        const price = await this.priceRepository.findOne({ where: { id }, relations: ['product', 'store'] });
         if (!price) {
-          throw new NotFoundException(`Price with ID ${id} not found`);
+            throw new NotFoundException(`Price with ID ${id} not found`);
         }
         return price;
-      }
+    }
 
     async update(id: number, updatePriceDto: UpdatePriceDto): Promise<Price> {
         await this.findOne(id);
