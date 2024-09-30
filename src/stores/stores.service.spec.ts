@@ -39,13 +39,11 @@ describe('StoresService', () => {
     it('should create and return a store', async () => {
       const createStoreDto: CreateStoreDto = { description: 'Test Store' };
       const savedStore = { id: 1, ...createStoreDto };
-      mockStoreRepository.create.mockReturnValue(savedStore);
+
       mockStoreRepository.save.mockResolvedValue(savedStore);
 
-      const result = await service.create(createStoreDto);
-      expect(result).toEqual(savedStore);
-      expect(mockStoreRepository.create).toHaveBeenCalledWith(createStoreDto);
-      expect(mockStoreRepository.save).toHaveBeenCalledWith(savedStore);
+      expect(await service.create(createStoreDto)).toBe(savedStore);
+      expect(mockStoreRepository.save).toHaveBeenCalledWith(createStoreDto);
     });
   });
 
