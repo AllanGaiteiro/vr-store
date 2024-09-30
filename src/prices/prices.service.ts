@@ -4,8 +4,8 @@ import { Repository } from 'typeorm';
 import { Price } from './price.entity';
 import { CreatePriceDto } from './dto/create-price.dto';
 import { UpdatePriceDto } from './dto/update-price.dto';
-import { Product } from 'src/products/product.entity';
-import { Store } from 'src/stores/store.entity';
+import { Product } from '../products/product.entity';
+import { Store } from '../stores/store.entity';
 
 @Injectable()
 export class PricesService {

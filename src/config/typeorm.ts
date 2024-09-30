@@ -1,8 +1,8 @@
 import { registerAs } from "@nestjs/config";
 import { config as dotenvConfig } from 'dotenv';
-import { Price } from "src/prices/price.entity";
-import { Product } from "src/products/product.entity";
-import { Store } from "src/stores/store.entity";
+import { Price } from "../prices/price.entity";
+import { Product } from "../products/product.entity";
+import { Store } from "../stores/store.entity";
 import { DataSource, DataSourceOptions } from "typeorm";
 
 dotenvConfig({ path: '.env' });
