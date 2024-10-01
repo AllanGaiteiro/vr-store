@@ -1,9 +1,25 @@
-import { Controller, Get, Post, Param, Body, Patch, Delete, NotFoundException, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Body,
+  Patch,
+  Delete,
+  NotFoundException,
+  HttpCode,
+} from '@nestjs/common';
 import { PricesService } from './prices.service';
 import { CreatePriceDto } from './dto/create-price.dto';
 import { UpdatePriceDto } from './dto/update-price.dto';
 import { Price } from './price.entity';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger';
 
 @ApiTags('prices')
 @Controller('prices')
@@ -27,7 +43,7 @@ export class PricesController {
   @ApiResponse({
     status: 200,
     description: 'Preço retornado com sucesso.',
-    type: Price, 
+    type: Price,
   })
   @ApiResponse({
     status: 404,
@@ -56,7 +72,10 @@ export class PricesController {
   @Patch(':id')
   @ApiOperation({ summary: 'Atualizar um preço pelo ID' })
   @ApiParam({ name: 'id', description: 'O ID do preço a ser atualizado' })
-  @ApiBody({ type: UpdatePriceDto, description: 'Dados para atualizar o preço' })
+  @ApiBody({
+    type: UpdatePriceDto,
+    description: 'Dados para atualizar o preço',
+  })
   @ApiResponse({
     status: 200,
     description: 'Preço atualizado com sucesso.',
@@ -70,7 +89,7 @@ export class PricesController {
   }
 
   @Delete(':id')
-  @HttpCode(204) 
+  @HttpCode(204)
   @ApiOperation({ summary: 'Remover um preço pelo ID' })
   @ApiParam({ name: 'id', description: 'O ID do preço a ser removido' })
   @ApiResponse({

@@ -9,59 +9,66 @@ import { Store } from '../stores/store.entity';
 
 @Injectable()
 export class PricesService {
-    constructor(
-        @InjectRepository(Price)
-        private priceRepository: Repository<Price>,
-        @InjectRepository(Product)
-        private productRepository: Repository<Product>,
-        @InjectRepository(Store)
-        private storeRepository: Repository<Store>,
-    ) { }
+  constructor(
+    @InjectRepository(Price)
+    private priceRepository: Repository<Price>,
+    @InjectRepository(Product)
+    private productRepository: Repository<Product>,
+    @InjectRepository(Store)
+    private storeRepository: Repository<Store>,
+  ) {}
 
-    async create(createPriceDto: CreatePriceDto): Promise<Price> {
-        const { productId, storeId, priceValue } = createPriceDto;
+  async create(createPriceDto: CreatePriceDto): Promise<Price> {
+    const { productId, storeId, priceValue } = createPriceDto;
 
-        const product = await this.productRepository.findOne({ where: { id: productId } });
-        if (!product) {
-            throw new NotFoundException(`Product with ID ${productId} not found`);
-        }
-
-        const store = await this.storeRepository.findOne({ where: { id: storeId } });
-        if (!store) {
-            throw new NotFoundException(`Store with ID ${storeId} not found`);
-        }
-
-        const price = this.priceRepository.create({
-            priceValue,
-            product,
-            store,
-        });
-
-        return this.priceRepository.save(price);
+    const product = await this.productRepository.findOne({
+      where: { id: productId },
+    });
+    if (!product) {
+      throw new NotFoundException(`Product with ID ${productId} not found`);
     }
 
-    async findAll(): Promise<Price[]> {
-        return this.priceRepository.find({ relations: ['product', 'store'] });
+    const store = await this.storeRepository.findOne({
+      where: { id: storeId },
+    });
+    if (!store) {
+      throw new NotFoundException(`Store with ID ${storeId} not found`);
     }
 
-    async findOne(id: number): Promise<Price> {
-        const price = await this.priceRepository.findOne({ where: { id }, relations: ['product', 'store'] });
-        if (!price) {
-            throw new NotFoundException(`Price with ID ${id} not found`);
-        }
-        return price;
-    }
+    const price = this.priceRepository.create({
+      priceValue,
+      product,
+      store,
+    });
 
-    async update(id: number, updatePriceDto: UpdatePriceDto): Promise<Price> {
-        await this.findOne(id);
-        await this.priceRepository.update(id, updatePriceDto);
-        return this.findOne(id);
-    }
+    return this.priceRepository.save(price);
+  }
 
-    async remove(id: number): Promise<void> {
-        const result = await this.priceRepository.delete(id);
-        if (result.affected === 0) {
-            throw new NotFoundException(`Price with ID ${id} not found`);
-        }
+  async findAll(): Promise<Price[]> {
+    return this.priceRepository.find({ relations: ['product', 'store'] });
+  }
+
+  async findOne(id: number): Promise<Price> {
+    const price = await this.priceRepository.findOne({
+      where: { id },
+      relations: ['product', 'store'],
+    });
+    if (!price) {
+      throw new NotFoundException(`Price with ID ${id} not found`);
     }
+    return price;
+  }
+
+  async update(id: number, updatePriceDto: UpdatePriceDto): Promise<Price> {
+    await this.findOne(id);
+    await this.priceRepository.update(id, updatePriceDto);
+    return this.findOne(id);
+  }
+
+  async remove(id: number): Promise<void> {
+    const result = await this.priceRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Price with ID ${id} not found`);
+    }
+  }
 }
