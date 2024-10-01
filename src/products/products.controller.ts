@@ -1,8 +1,23 @@
-import { Controller, Get, Post, Param, Body, Delete, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Body,
+  Delete,
+  HttpCode,
+  NotFoundException,
+} from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { Product } from './product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger';
 
 @ApiTags('products')
 @Controller('products')
@@ -20,6 +35,26 @@ export class ProductsController {
     return this.productsService.findAll();
   }
 
+  @Get(':id')
+  @ApiOperation({ summary: 'Obter um produto pelo ID' })
+  @ApiParam({ name: 'id', description: 'O ID do produto a ser retornado' })
+  @ApiResponse({
+    status: 200,
+    description: 'produto retornado com sucesso.',
+    type: Product,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Produto não encontrado.',
+  })
+  async findOne(@Param('id') id: number): Promise<Product> {
+    const product = await this.productsService.findOne(id);
+    if (!product) {
+      throw new NotFoundException(`Product with ID ${id} not found`);
+    }
+    return product;
+  }
+
   @Post()
   @ApiOperation({ summary: 'Criar um novo produto' })
   @ApiBody({ type: CreateProductDto, description: 'Os dados do novo produto' })
@@ -33,7 +68,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  @HttpCode(204) 
+  @HttpCode(204)
   @ApiOperation({ summary: 'Remover um produto por ID' })
   @ApiParam({ name: 'id', description: 'O ID do produto a ser removido' })
   @ApiResponse({

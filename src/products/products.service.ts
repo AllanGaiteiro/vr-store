@@ -15,6 +15,10 @@ export class ProductsService {
     return this.produtoRepository.find();
   }
 
+  async findOne(id: number): Promise<Product> {
+    return this.produtoRepository.findOne({ where: { id } });
+  }
+
   async create(produto: CreateProductDto): Promise<Product> {
     return this.produtoRepository.save(produto);
   }
@@ -22,7 +26,7 @@ export class ProductsService {
   async remove(id: number): Promise<void> {
     const result = await this.produtoRepository.delete(id);
     if (result?.affected === 0) {
-        throw new NotFoundException(`Product with ID ${id} not found`);
+      throw new NotFoundException(`Product with ID ${id} not found`);
     }
   }
 }
