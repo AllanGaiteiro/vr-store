@@ -12,7 +12,7 @@ export class CreateProductDto {
 
   @ApiProperty({
     description: 'Custo do produto',
-    example: 10.0,
+    example: 10.22,
   })
   @Transform(({ value }) =>
     typeof value === 'string' ? parseFloat(value) : value,

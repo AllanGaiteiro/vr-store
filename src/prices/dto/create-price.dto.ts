@@ -20,7 +20,7 @@ export class CreatePriceDto {
 
   @ApiProperty({
     description: 'Valor do preço',
-    example: 15.00,
+    example: 15.22,
   })
   @IsNotEmpty({ message: 'O valor do preço é obrigatório' })
   @IsNumber({}, { message: 'O valor do preço deve ser um número' })
