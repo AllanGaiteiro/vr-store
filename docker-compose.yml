@@ -1,4 +1,3 @@
-version: '3.8'  # Adicione a versão do Compose se ainda não estiver presente
 
 services:
   vr-store:
@@ -26,7 +25,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_NAME}"]
+      # test: ["CMD-SHELL", "pg_isready -U ${DB_NAME}"]
       interval: 10s
       timeout: 5s
       retries: 5
