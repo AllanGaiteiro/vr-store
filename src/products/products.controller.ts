@@ -8,8 +8,10 @@ import {
   HttpCode,
   NotFoundException,
   Patch,
+  Query,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
+import { FilterProductDto } from './dto/filter-product.dto';
 import { Product } from './product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import {
@@ -27,14 +29,14 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Obter todos os produtos' })
+  @ApiOperation({ summary: 'Obter todos os produtos com filtros opcionais' })
   @ApiResponse({
     status: 200,
     description: 'Lista de produtos retornada com sucesso.',
     type: [Product],
   })
-  async findAll(): Promise<Product[]> {
-    return this.productsService.findAll();
+  async findAll(@Query() filters?: FilterProductDto): Promise<Product[]> {
+    return this.productsService.findAll(filters);
   }
 
   @Get(':id')

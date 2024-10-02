@@ -20,8 +20,8 @@ import {
   ApiResponse,
   ApiParam,
   ApiBody,
-  ApiQuery,
 } from '@nestjs/swagger';
+import { FilterPricesDto } from './dto/filter-prices.dto';
 
 @ApiTags('prices')
 @Controller('prices')
@@ -35,44 +35,7 @@ export class PricesController {
     description: 'Lista de preços retornada com sucesso.',
     type: [Price],
   })
-  // Adicionando ApiQuery para cada parâmetro opcional
-  @ApiQuery({
-    name: 'productId',
-    required: false,
-    type: Number,
-    description: 'ID do produto para filtrar',
-  })
-  @ApiQuery({
-    name: 'storeId',
-    required: false,
-    type: Number,
-    description: 'ID da loja para filtrar',
-  })
-  @ApiQuery({
-    name: 'minPriceValue',
-    required: false,
-    type: Number,
-    description: 'Valor mínimo do preço para filtrar',
-  })
-  @ApiQuery({
-    name: 'maxPriceValue',
-    required: false,
-    type: Number,
-    description: 'Valor máximo do preço para filtrar',
-  })
-  async findAll(
-    @Query('productId') productId?: number,
-    @Query('storeId') storeId?: number,
-    @Query('minPriceValue') minPriceValue?: number,
-    @Query('maxPriceValue') maxPriceValue?: number,
-  ): Promise<Price[]> {
-    const filters = {
-      productId: productId ? Number(productId) : undefined,
-      storeId: storeId ? Number(storeId) : undefined,
-      minPriceValue: minPriceValue ? Number(minPriceValue) : undefined,
-      maxPriceValue: maxPriceValue ? Number(maxPriceValue) : undefined,
-    };
-
+  async findAll(@Query() filters?: FilterPricesDto): Promise<Price[]> {
     return this.pricesService.findAll(filters);
   }
 

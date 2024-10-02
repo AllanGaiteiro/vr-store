@@ -6,7 +6,7 @@ import { CreatePriceDto } from './dto/create-price.dto';
 import { UpdatePriceDto } from './dto/update-price.dto';
 import { Product } from '../products/product.entity';
 import { Store } from '../stores/store.entity';
-import { FilterPrices } from './filter-prices.entity';
+import { FilterPricesDto } from './dto/filter-prices.dto';
 
 @Injectable()
 export class PricesService {
@@ -45,7 +45,7 @@ export class PricesService {
     return this.priceRepository.save(price);
   }
 
-  async findAll(filters: FilterPrices): Promise<Price[]> {
+  async findAll(filters: FilterPricesDto): Promise<Price[]> {
     const query = this.priceRepository
       .createQueryBuilder('price')
       .leftJoinAndSelect('price.product', 'product')
