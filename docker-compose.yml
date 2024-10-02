@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'  # Adicione a versão do Compose se ainda não estiver presente
 
 services:
   vr-store:
@@ -17,13 +17,19 @@ services:
     image: postgres:14
     container_name: vr-store-db
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}          # Nome do usuário do PostgreSQL
+      POSTGRES_PASSWORD: ${DB_PASSWORD}    # Senha do usuário
+      POSTGRES_DB: ${DB_NAME}              # Nome do banco de dados a ser criado
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d # Adicione esta linha
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   app-network:

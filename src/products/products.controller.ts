@@ -7,6 +7,7 @@ import {
   Delete,
   HttpCode,
   NotFoundException,
+  Patch,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { Product } from './product.entity';
@@ -18,6 +19,7 @@ import {
   ApiParam,
   ApiBody,
 } from '@nestjs/swagger';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @ApiTags('products')
 @Controller('products')
@@ -64,7 +66,32 @@ export class ProductsController {
     type: Product,
   })
   async create(@Body() createProductDto: CreateProductDto): Promise<Product> {
+    if (createProductDto.cost !== undefined) {
+      createProductDto.cost = Number(createProductDto.cost); // Converta para número
+    }
     return this.productsService.create(createProductDto);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Atualizar um produto pelo ID' })
+  @ApiParam({ name: 'id', description: 'O ID do produto a ser atualizado' })
+  @ApiBody({
+    type: UpdateProductDto,
+    description: 'Dados para atualizar o produto',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Poduto atualizado com sucesso.',
+    type: Product,
+  })
+  async update(
+    @Param('id') id: number,
+    @Body() updateProdutoDto: UpdateProductDto,
+  ): Promise<Product> {
+    if (updateProdutoDto.cost !== undefined) {
+      updateProdutoDto.cost = Number(updateProdutoDto.cost); // Converta para número
+    }
+    return this.productsService.update(id, updateProdutoDto);
   }
 
   @Delete(':id')

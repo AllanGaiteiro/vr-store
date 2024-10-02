@@ -16,11 +16,12 @@ dotenv.config();
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [typeorm]
+      load: [typeorm],
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => (configService.get('typeorm'))
+      useFactory: async (configService: ConfigService) =>
+        configService.get('typeorm'),
     }),
     TypeOrmModule.forFeature([Product, Store, Price]),
     ProductsModule,

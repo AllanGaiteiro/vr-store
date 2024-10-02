@@ -1,5 +1,6 @@
 import { IsOptional, IsNotEmpty, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class UpdateProductDto {
   @ApiProperty({
@@ -13,9 +14,12 @@ export class UpdateProductDto {
 
   @ApiProperty({
     description: 'Novo custo do produto (opcional)',
-    example: 15.00,
+    example: 15.21,
     required: false,
   })
+  @Transform(({ value }) =>
+    typeof value === 'string' ? parseFloat(value) : value,
+  )
   @IsOptional()
   @IsNumber({}, { message: 'O custo deve ser um número.' })
   cost?: number;
