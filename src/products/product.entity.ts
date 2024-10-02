@@ -20,7 +20,7 @@ export class Product {
     example: 15.99,
     nullable: true,
   })
-  @Column('decimal', { precision: 13, scale: 3, nullable: true, name: 'custo' })
+  @Column('decimal', { precision: 13, scale: 2, nullable: true, name: 'custo' })
   cost: number;
 
   @ApiProperty({
