@@ -6,6 +6,7 @@ import { CreatePriceDto } from './dto/create-price.dto';
 import { UpdatePriceDto } from './dto/update-price.dto';
 import { Product } from '../products/product.entity';
 import { Store } from '../stores/store.entity';
+import { FilterPrices } from './filter-prices.entity';
 
 @Injectable()
 export class PricesService {
@@ -44,8 +45,36 @@ export class PricesService {
     return this.priceRepository.save(price);
   }
 
-  async findAll(): Promise<Price[]> {
-    return this.priceRepository.find({ relations: ['product', 'store'] });
+  async findAll(filters: FilterPrices): Promise<Price[]> {
+    const query = this.priceRepository
+      .createQueryBuilder('price')
+      .leftJoinAndSelect('price.product', 'product')
+      .leftJoinAndSelect('price.store', 'store');
+
+    // Aplica os filtros dinamicamente
+    if (filters.productId) {
+      query.andWhere('product.id = :productId', {
+        productId: filters.productId,
+      });
+    }
+
+    if (filters.storeId) {
+      query.andWhere('store.id = :storeId', { storeId: filters.storeId });
+    }
+
+    if (filters.minPriceValue) {
+      query.andWhere('price.priceValue >= :minPriceValue', {
+        minPriceValue: filters.minPriceValue,
+      });
+    }
+
+    if (filters.maxPriceValue) {
+      query.andWhere('price.priceValue <= :maxPriceValue', {
+        maxPriceValue: filters.maxPriceValue,
+      });
+    }
+
+    return query.getMany();
   }
 
   async findOne(id: number): Promise<Price> {
