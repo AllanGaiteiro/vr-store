@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Price } from './price.entity';
@@ -46,35 +50,53 @@ export class PricesService {
   }
 
   async findAll(filters: FilterPricesDto): Promise<Price[]> {
-    const query = this.priceRepository
-      .createQueryBuilder('price')
-      .leftJoinAndSelect('price.product', 'product')
-      .leftJoinAndSelect('price.store', 'store');
+    try {
+      const query = this.priceRepository
+        .createQueryBuilder('price')
+        .leftJoinAndSelect('price.product', 'product')
+        .leftJoinAndSelect('price.store', 'store');
 
-    // Aplica os filtros dinamicamente
-    if (filters.productId) {
-      query.andWhere('product.id = :productId', {
-        productId: filters.productId,
-      });
+      // Aplica os filtros dinamicamente
+      if (filters.productId) {
+        query.andWhere('product.id = :productId', {
+          productId: filters.productId,
+        });
+      }
+
+      if (filters.storeId) {
+        query.andWhere('store.id = :storeId', { storeId: filters.storeId });
+      }
+
+      if (filters.minPriceValue) {
+        query.andWhere('price.priceValue >= :minPriceValue', {
+          minPriceValue: filters.minPriceValue,
+        });
+      }
+
+      if (filters.maxPriceValue) {
+        query.andWhere('price.priceValue <= :maxPriceValue', {
+          maxPriceValue: filters.maxPriceValue,
+        });
+      }
+
+      // Agrupando resultados para retornar apenas um preço por produto
+      if (
+        filters?.singleItemPerProduct !== undefined &&
+        JSON.parse(filters?.singleItemPerProduct + '')
+      ) {
+        const subQuery = this.priceRepository
+          .createQueryBuilder('subPrice')
+          .select('MIN(subPrice.id)')
+          .where('subPrice.product.id = price.product.id');
+
+        query.andWhere(`price.id = (${subQuery.getQuery()})`);
+      }
+
+      return await query.getMany();
+    } catch (error) {
+      console.error('Error fetching prices:', error);
+      throw new InternalServerErrorException('Error fetching prices');
     }
-
-    if (filters.storeId) {
-      query.andWhere('store.id = :storeId', { storeId: filters.storeId });
-    }
-
-    if (filters.minPriceValue) {
-      query.andWhere('price.priceValue >= :minPriceValue', {
-        minPriceValue: filters.minPriceValue,
-      });
-    }
-
-    if (filters.maxPriceValue) {
-      query.andWhere('price.priceValue <= :maxPriceValue', {
-        maxPriceValue: filters.maxPriceValue,
-      });
-    }
-
-    return query.getMany();
   }
 
   async findOne(id: number): Promise<Price> {
