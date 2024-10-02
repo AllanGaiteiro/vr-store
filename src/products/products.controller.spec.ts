@@ -41,7 +41,10 @@ describe('ProductsController', () => {
 
   describe('create', () => {
     it('should create and return a product', async () => {
-      const createProductDto: CreateProductDto = { description: 'New Product', cost: 30 };
+      const createProductDto: CreateProductDto = {
+        description: 'New Product',
+        cost: 30,
+      };
       const savedProduct = { id: 1, ...createProductDto } as Product;
       mockProductService.create.mockResolvedValue(savedProduct);
 
