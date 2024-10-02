@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Price } from './price.entity';
 import { CreatePriceDto } from './dto/create-price.dto';
 import { UpdatePriceDto } from './dto/update-price.dto';
@@ -67,17 +67,7 @@ export class PricesService {
         query.andWhere('store.id = :storeId', { storeId: filters.storeId });
       }
 
-      if (filters.minPriceValue) {
-        query.andWhere('price.priceValue >= :minPriceValue', {
-          minPriceValue: filters.minPriceValue,
-        });
-      }
-
-      if (filters.maxPriceValue) {
-        query.andWhere('price.priceValue <= :maxPriceValue', {
-          maxPriceValue: filters.maxPriceValue,
-        });
-      }
+      this.applyFilters(query, filters, 'price');
 
       // Agrupando resultados para retornar apenas um preço por produto
       if (
@@ -89,6 +79,7 @@ export class PricesService {
           .select('MIN(subPrice.id)')
           .where('subPrice.product.id = price.product.id');
 
+        this.applyFilters(subQuery, filters, 'subPrice');
         query.andWhere(`price.id = (${subQuery.getQuery()})`);
       }
 
@@ -96,6 +87,24 @@ export class PricesService {
     } catch (error) {
       console.error('Error fetching prices:', error);
       throw new InternalServerErrorException('Error fetching prices');
+    }
+  }
+
+  private applyFilters(
+    query: SelectQueryBuilder<Price>,
+    filters: FilterPricesDto,
+    queryName: 'price' | 'subPrice',
+  ) {
+    if (filters.minPriceValue) {
+      query.andWhere(`${queryName}.priceValue >= :minPriceValue`, {
+        minPriceValue: filters.minPriceValue,
+      });
+    }
+
+    if (filters.maxPriceValue) {
+      query.andWhere(`${queryName}.priceValue <= :maxPriceValue`, {
+        maxPriceValue: filters.maxPriceValue,
+      });
     }
   }
 
