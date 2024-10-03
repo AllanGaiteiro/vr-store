@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class UpdatePriceDto {
   @ApiProperty({
     description: 'Novo valor do preço (opcional)',
-    example: 20.00,
+    example: 20.22,
     required: false,
   })
   @IsOptional()

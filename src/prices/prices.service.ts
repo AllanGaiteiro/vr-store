@@ -67,6 +67,12 @@ export class PricesService {
         query.andWhere('store.id = :storeId', { storeId: filters.storeId });
       }
 
+      if (filters.description) {
+        query.andWhere('product.description LIKE :description', {
+          description: `%${filters.description}%`,
+        });
+      }
+
       this.applyFilters(query, filters, 'price');
 
       // Agrupando resultados para retornar apenas um preço por produto
