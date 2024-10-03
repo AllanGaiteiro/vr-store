@@ -73,6 +73,18 @@ export class PricesService {
         });
       }
 
+      if (filters.minCost) {
+        query.andWhere(`product.cost >= :minCost`, {
+          minCost: filters.minCost,
+        });
+      }
+
+      if (filters.maxCost) {
+        query.andWhere(`product.cost <= :maxCost`, {
+          maxCost: filters.maxCost,
+        });
+      }
+
       this.applyFilters(query, filters, 'price');
 
       // Agrupando resultados para retornar apenas um preço por produto
