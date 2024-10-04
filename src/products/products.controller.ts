@@ -20,6 +20,7 @@ import {
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { UpdateProductDto } from './dto/update-product.dto';
 
@@ -29,14 +30,26 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Obter todos os produtos com filtros opcionais' })
+  @ApiOperation({
+    summary: 'Obter todos os produtos com filtros opcionais e paginação',
+  })
+  @ApiQuery({ name: 'page', required: false, description: 'Número da página' })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Limite de itens por página',
+  })
   @ApiResponse({
     status: 200,
     description: 'Lista de produtos retornada com sucesso.',
     type: [Product],
   })
-  async findAll(@Query() filters?: FilterProductDto): Promise<Product[]> {
-    return this.productsService.findAll(filters);
+  async findAll(
+    @Query() filters?: FilterProductDto,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ): Promise<{ data: Product[]; length: number; page: number; limit: number }> {
+    return this.productsService.findAll(filters, page, limit);
   }
 
   @Get(':id')

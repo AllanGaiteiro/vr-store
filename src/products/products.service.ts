@@ -13,7 +13,11 @@ export class ProductsService {
     private productRepository: Repository<Product>,
   ) {}
 
-  async findAll(filters: FilterProductDto): Promise<Product[]> {
+  async findAll(
+    filters: FilterProductDto,
+    page: number,
+    limit: number,
+  ): Promise<{ data: Product[]; length: number; page: number; limit: number }> {
     const query = this.productRepository.createQueryBuilder('product');
 
     // Aplica os filtros dinamicamente
@@ -37,7 +41,18 @@ export class ProductsService {
       query.andWhere('product.cost <= :maxCost', { maxCost: filters.maxCost });
     }
 
-    return query.getMany();
+    // Paginação
+    const [result, length] = await query
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+
+    return {
+      data: result,
+      length,
+      page,
+      limit,
+    };
   }
 
   async findOne(id: number): Promise<Product> {

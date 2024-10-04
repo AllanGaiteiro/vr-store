@@ -7,7 +7,11 @@ export class Store {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
 
-  @ApiProperty({ description: 'Descrição da loja', example: 'Loja Exemplo', maxLength: 60 })
+  @ApiProperty({
+    description: 'Descrição da loja',
+    example: 'Loja Exemplo',
+    maxLength: 60,
+  })
   @Column({ length: 60, name: 'descricao' })
   description: string;
 }
