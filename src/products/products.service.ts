@@ -5,19 +5,25 @@ import { Product } from './product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
+import { PaginatedResultDto } from 'common/dto/paginated-result.dto';
+import { PaginatedResultService } from 'common/services/paginated-result.service';
+import { BaseQueryService } from 'common/services/base-query.service';
 
 @Injectable()
-export class ProductsService {
+export class ProductsService extends BaseQueryService<Product> {
+  private readonly paginatedResultService =
+    new PaginatedResultService<Product>();
+
   constructor(
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
-  ) {}
+  ) {
+    super();
+  }
 
   async findAll(
     filters?: FilterProductDto,
-    page?: number,
-    limit?: number,
-  ): Promise<{ data: Product[]; length: number; page: number; limit: number }> {
+  ): Promise<PaginatedResultDto<Product>> {
     const query = this.productRepository.createQueryBuilder('product');
 
     // Aplica os filtros dinamicamente
@@ -41,28 +47,13 @@ export class ProductsService {
       query.andWhere('product.cost <= :maxCost', { maxCost: filters.maxCost });
     }
 
-    const result = {
-      data: [],
-      length: 0,
-      page: page || 0,
-      limit: limit || 0,
-    };
+    this.applyPaginationAndSorting(query, filters);
 
-    if (page && limit) {
-      const [data, length] = await query
-        .skip((page - 1) * limit)
-        .take(limit)
-        .getManyAndCount();
-      result.data = data;
-      result.length = length;
-    } else {
-      const data = await query.getMany();
-      result.data = data;
-      result.length = data.length;
-      result.limit = data.length;
-    }
-
-    return result;
+    return this.paginatedResultService.getPaginatedResult(
+      query,
+      filters?.page,
+      filters?.limit,
+    );
   }
 
   async findOne(id: number): Promise<Product> {

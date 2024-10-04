@@ -11,7 +11,6 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 
 describe('PricesController', () => {
   let controller: PricesController;
-  let service: PricesService;
 
   const mockPriceService = {
     findAll: jest.fn(),
@@ -63,7 +62,6 @@ describe('PricesController', () => {
     }).compile();
 
     controller = module.get<PricesController>(PricesController);
-    service = module.get<PricesService>(PricesService);
   });
 
   describe('findAll', () => {

@@ -11,7 +11,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('PrecoVenda')
 export class Price {
-  @ApiProperty({ description: 'Identificador único do preço', example: 1 })
+  @ApiProperty({ description: 'Identificador único do preço' })
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
 
@@ -30,7 +30,6 @@ export class Price {
 
   @ApiProperty({
     description: 'Valor do preço',
-    example: 10.5,
     type: 'number',
   })
   @Column('decimal', {

@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { BaseFilterDto } from 'common/dto/base-filters.dto';
 
-export class FilterPricesDto {
+export class FilterPricesDto extends BaseFilterDto {
   @ApiPropertyOptional({
     description: 'ID do produto para filtrar',
     type: Number,

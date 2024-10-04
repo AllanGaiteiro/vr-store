@@ -23,6 +23,7 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { FilterPricesDto } from './dto/filter-prices.dto';
+import { PaginatedResultDto } from 'common/dto/paginated-result.dto';
 
 @ApiTags('prices')
 @Controller('prices')
@@ -44,10 +45,8 @@ export class PricesController {
   })
   async findAll(
     @Query() filters?: FilterPricesDto,
-    @Query('page') page = 1,
-    @Query('limit') limit = 10,
-  ): Promise<{ data: Price[]; length: number; page: number; limit: number }> {
-    return this.pricesService.findAll(filters, page, limit);
+  ): Promise<PaginatedResultDto<Price>> {
+    return this.pricesService.findAll(filters);
   }
 
   @Get(':id')

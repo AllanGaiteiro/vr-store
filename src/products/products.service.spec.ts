@@ -12,6 +12,7 @@ describe('ProductsService', () => {
     andWhere: jest.fn().mockReturnThis(),
     select: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
     getManyAndCount: jest
       .fn()
       .mockResolvedValue([[{ cost: 20, description: 'New Product' }], 1]),
@@ -53,7 +54,7 @@ describe('ProductsService', () => {
       };
       mockProductRepository.find.mockResolvedValue(result);
 
-      expect(await service.findAll()).toStrictEqual(result);
+      expect({ ...(await service.findAll()) }).toStrictEqual(result);
     });
   });
 

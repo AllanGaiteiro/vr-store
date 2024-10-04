@@ -11,9 +11,14 @@ import { UpdatePriceDto } from './dto/update-price.dto';
 import { Product } from '../products/product.entity';
 import { Store } from '../stores/store.entity';
 import { FilterPricesDto } from './dto/filter-prices.dto';
+import { BaseQueryService } from 'common/services/base-query.service';
+import { PaginatedResultService } from 'common/services/paginated-result.service';
+import { PaginatedResultDto } from 'common/dto/paginated-result.dto';
 
 @Injectable()
-export class PricesService {
+export class PricesService extends BaseQueryService<Price> {
+  private readonly paginatedResultService = new PaginatedResultService<Price>();
+
   constructor(
     @InjectRepository(Price)
     private priceRepository: Repository<Price>,
@@ -21,7 +26,9 @@ export class PricesService {
     private productRepository: Repository<Product>,
     @InjectRepository(Store)
     private storeRepository: Repository<Store>,
-  ) {}
+  ) {
+    super();
+  }
 
   async create(createPriceDto: CreatePriceDto): Promise<Price> {
     const { productId, storeId, priceValue } = createPriceDto;
@@ -49,11 +56,7 @@ export class PricesService {
     return this.priceRepository.save(price);
   }
 
-  async findAll(
-    filters?: FilterPricesDto,
-    page?: number,
-    limit?: number,
-  ): Promise<{ data: Price[]; length: number; page: number; limit: number }> {
+  async findAll(filters?: FilterPricesDto): Promise<PaginatedResultDto<Price>> {
     try {
       const query = this.priceRepository
         .createQueryBuilder('price')
@@ -105,27 +108,13 @@ export class PricesService {
         query.andWhere(`price.id = (${subQuery.getQuery()})`);
       }
 
-      const result = {
-        data: [],
-        length: 0,
-        page: page || 0,
-        limit: limit || 0,
-      };
-      if (page && limit) {
-        const [data, length] = await query
-          .skip((page - 1) * limit)
-          .take(limit)
-          .getManyAndCount();
-        result.data = data;
-        result.length = length;
-      } else {
-        const data = await query.getMany();
-        result.data = data;
-        result.length = data.length;
-        result.limit = data.length;
-      }
-
-      return result;
+      this.applyPriceFilters(query, filters, 'price');
+      this.applyPaginationAndSorting(query, filters);
+      return this.paginatedResultService.getPaginatedResult(
+        query,
+        filters?.page,
+        filters?.limit,
+      );
     } catch (error) {
       console.error('Error fetching prices:', error);
       throw new InternalServerErrorException('Error fetching prices');
