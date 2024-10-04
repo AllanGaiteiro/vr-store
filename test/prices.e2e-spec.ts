@@ -10,11 +10,26 @@ import { Store } from '../src/stores/store.entity';
 describe('PricesController (E2E)', () => {
   let app: INestApplication;
 
+  const mockQueryBuilder = {
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    andWhere: jest.fn().mockReturnThis(),
+    select: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
+    getManyAndCount: jest
+      .fn()
+      .mockResolvedValue([[{ id: 1, priceValue: 100 }], 1]),
+    getMany: jest.fn().mockResolvedValue([{ id: 1, priceValue: 100 }]),
+    skip: jest.fn().mockReturnThis(),
+    take: jest.fn().mockReturnThis(),
+  };
+
   const mockPriceRepository = {
+    createQueryBuilder: jest.fn(() => mockQueryBuilder),
+    findOne: jest.fn(),
     create: jest.fn(),
     save: jest.fn(),
     find: jest.fn(),
-    findOne: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
   };

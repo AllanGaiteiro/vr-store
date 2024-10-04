@@ -8,7 +8,24 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 describe('ProductsController (E2E)', () => {
   let app: INestApplication;
 
+  const mockQueryBuilder = {
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    andWhere: jest.fn().mockReturnThis(),
+    select: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
+    getManyAndCount: jest
+      .fn()
+      .mockResolvedValue([[{ cost: 20, description: 'New Product' }], 1]),
+    getMany: jest
+      .fn()
+      .mockResolvedValue([{ cost: 20, description: 'New Product' }]),
+    skip: jest.fn().mockReturnThis(),
+    take: jest.fn().mockReturnThis(),
+  };
+
   const mockProductRepository = {
+    createQueryBuilder: jest.fn(() => mockQueryBuilder),
     find: jest.fn(),
     save: jest.fn(),
     delete: jest.fn(),
