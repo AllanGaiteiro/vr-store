@@ -49,7 +49,11 @@ export class PricesService {
     return this.priceRepository.save(price);
   }
 
-  async findAll(filters: FilterPricesDto): Promise<Price[]> {
+  async findAll(
+    filters: FilterPricesDto,
+    page: number,
+    limit: number,
+  ): Promise<{ data: Price[]; length: number; page: number; limit: number }> {
     try {
       const query = this.priceRepository
         .createQueryBuilder('price')
@@ -101,7 +105,17 @@ export class PricesService {
         query.andWhere(`price.id = (${subQuery.getQuery()})`);
       }
 
-      return await query.getMany();
+      const [result, length] = await query
+        .skip((page - 1) * limit)
+        .take(limit)
+        .getManyAndCount();
+
+      return {
+        data: result,
+        length,
+        page,
+        limit,
+      };
     } catch (error) {
       console.error('Error fetching prices:', error);
       throw new InternalServerErrorException('Error fetching prices');

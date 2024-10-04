@@ -20,6 +20,7 @@ import {
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { FilterPricesDto } from './dto/filter-prices.dto';
 
@@ -35,8 +36,18 @@ export class PricesController {
     description: 'Lista de preços retornada com sucesso.',
     type: [Price],
   })
-  async findAll(@Query() filters?: FilterPricesDto): Promise<Price[]> {
-    return this.pricesService.findAll(filters);
+  @ApiQuery({ name: 'page', required: false, description: 'Número da página' })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Limite de itens por página',
+  })
+  async findAll(
+    @Query() filters?: FilterPricesDto,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ): Promise<{ data: Price[]; length: number; page: number; limit: number }> {
+    return this.pricesService.findAll(filters, page, limit);
   }
 
   @Get(':id')
