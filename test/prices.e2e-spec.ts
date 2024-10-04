@@ -63,7 +63,12 @@ describe('PricesController (E2E)', () => {
   });
 
   it('/prices (GET)', async () => {
-    const result = [{ id: 1, priceValue: 100 }];
+    const result = {
+      data: [{ id: 1, priceValue: 100 }],
+      length: 1,
+      limit: 1,
+      page: 0,
+    };
     mockPriceRepository.find.mockResolvedValue(result);
 
     const response = await request(app.getHttpServer())

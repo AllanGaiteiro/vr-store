@@ -48,7 +48,12 @@ describe('ProductsController (E2E)', () => {
   });
 
   it('/products (GET)', async () => {
-    const result = [{ id: 1, name: 'Product 1' }];
+    const result = {
+      data: [{ cost: 20, description: 'New Product' }],
+      length: 1,
+      limit: 1,
+      page: 0,
+    };
     mockProductRepository.find.mockResolvedValue(result);
 
     const response = await request(app.getHttpServer())
