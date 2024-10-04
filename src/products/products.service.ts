@@ -5,9 +5,9 @@ import { Product } from './product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
-import { PaginatedResultDto } from 'common/dto/paginated-result.dto';
-import { PaginatedResultService } from 'common/services/paginated-result.service';
-import { BaseQueryService } from 'common/services/base-query.service';
+import { PaginatedResultDto } from '../common/dto/paginated-result.dto';
+import { PaginatedResultService } from '../common/services/paginated-result.service';
+import { BaseQueryService } from '../common/services/base-query.service';
 
 @Injectable()
 export class ProductsService extends BaseQueryService<Product> {

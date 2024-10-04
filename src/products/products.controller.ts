@@ -23,7 +23,7 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { PaginatedResultDto } from 'common/dto/paginated-result.dto';
+import { PaginatedResultDto } from '../common/dto/paginated-result.dto';
 
 @ApiTags('products')
 @Controller('products')

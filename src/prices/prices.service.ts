@@ -11,9 +11,9 @@ import { UpdatePriceDto } from './dto/update-price.dto';
 import { Product } from '../products/product.entity';
 import { Store } from '../stores/store.entity';
 import { FilterPricesDto } from './dto/filter-prices.dto';
-import { BaseQueryService } from 'common/services/base-query.service';
-import { PaginatedResultService } from 'common/services/paginated-result.service';
-import { PaginatedResultDto } from 'common/dto/paginated-result.dto';
+import { BaseQueryService } from '../common/services/base-query.service';
+import { PaginatedResultService } from '../common/services/paginated-result.service';
+import { PaginatedResultDto } from '../common/dto/paginated-result.dto';
 
 @Injectable()
 export class PricesService extends BaseQueryService<Price> {

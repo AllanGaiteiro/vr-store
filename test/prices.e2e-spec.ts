@@ -51,8 +51,10 @@ describe('PricesController (E2E)', () => {
     const result = [{ id: 1, priceValue: 100 }];
     mockPriceRepository.find.mockResolvedValue(result);
 
-    const response = await request(app.getHttpServer()).get('/prices').expect(200);
-    
+    const response = await request(app.getHttpServer())
+      .get('/prices')
+      .expect(200);
+
     expect(response.body).toEqual(result);
   });
 
@@ -64,8 +66,11 @@ describe('PricesController (E2E)', () => {
     mockStoreRepository.findOne.mockResolvedValue({ id: 1 }); // Mock da loja existente
     mockPriceRepository.save.mockResolvedValue(savedPrice);
 
-    const response = await request(app.getHttpServer()).post('/prices').send(createPriceDto).expect(201);
-    
+    const response = await request(app.getHttpServer())
+      .post('/prices')
+      .send(createPriceDto)
+      .expect(201);
+
     expect(response.body).toEqual(savedPrice);
   });
 
@@ -75,8 +80,11 @@ describe('PricesController (E2E)', () => {
     mockProductRepository.findOne.mockResolvedValue(null); // Produto não encontrado
     mockStoreRepository.findOne.mockResolvedValue({ id: 1 });
 
-    const response = await request(app.getHttpServer()).post('/prices').send(createPriceDto).expect(404);
-    
+    const response = await request(app.getHttpServer())
+      .post('/prices')
+      .send(createPriceDto)
+      .expect(404);
+
     expect(response.body.message).toEqual('Product with ID 999 not found');
   });
 
@@ -86,8 +94,11 @@ describe('PricesController (E2E)', () => {
     mockProductRepository.findOne.mockResolvedValue({ id: 1 });
     mockStoreRepository.findOne.mockResolvedValue(null); // Loja não encontrada
 
-    const response = await request(app.getHttpServer()).post('/prices').send(createPriceDto).expect(404);
-    
+    const response = await request(app.getHttpServer())
+      .post('/prices')
+      .send(createPriceDto)
+      .expect(404);
+
     expect(response.body.message).toEqual('Store with ID 999 not found');
   });
 
@@ -95,16 +106,20 @@ describe('PricesController (E2E)', () => {
     const price = { id: 1, priceValue: 100 };
     mockPriceRepository.findOne.mockResolvedValue(price);
 
-    const response = await request(app.getHttpServer()).get('/prices/1').expect(200);
-    
+    const response = await request(app.getHttpServer())
+      .get('/prices/1')
+      .expect(200);
+
     expect(response.body).toEqual(price);
   });
 
   it('/prices/:id (GET) - price not found', async () => {
     mockPriceRepository.findOne.mockResolvedValue(null); // Preço não encontrado
 
-    const response = await request(app.getHttpServer()).get('/prices/999').expect(404);
-    
+    const response = await request(app.getHttpServer())
+      .get('/prices/999')
+      .expect(404);
+
     expect(response.body.message).toEqual('Price with ID 999 not found');
   });
 
@@ -117,8 +132,10 @@ describe('PricesController (E2E)', () => {
   it('/prices/:id (DELETE) - price not found', async () => {
     mockPriceRepository.delete.mockResolvedValue({ affected: 0 }); // Preço não encontrado
 
-    const response = await request(app.getHttpServer()).delete('/prices/999').expect(404);
-    
+    const response = await request(app.getHttpServer())
+      .delete('/prices/999')
+      .expect(404);
+
     expect(response.body.message).toEqual('Price with ID 999 not found');
   });
 });

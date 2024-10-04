@@ -37,7 +37,9 @@ describe('StoresController (E2E)', () => {
     const result = [{ id: 1, name: 'Store 1' }];
     mockStoreRepository.find.mockResolvedValue(result);
 
-    const response = await request(app.getHttpServer()).get('/stores').expect(200);
+    const response = await request(app.getHttpServer())
+      .get('/stores')
+      .expect(200);
 
     expect(response.body).toEqual(result);
   });
@@ -59,7 +61,9 @@ describe('StoresController (E2E)', () => {
     const store = { id: 1, name: 'Store 1' };
     mockStoreRepository.findOne.mockResolvedValue(store);
 
-    const response = await request(app.getHttpServer()).get('/stores/1').expect(200);
+    const response = await request(app.getHttpServer())
+      .get('/stores/1')
+      .expect(200);
 
     expect(response.body).toEqual(store);
   });
@@ -67,7 +71,9 @@ describe('StoresController (E2E)', () => {
   it('/stores/:id (GET) - store not found', async () => {
     mockStoreRepository.findOne.mockResolvedValue(null); // Store não encontrado
 
-    const response = await request(app.getHttpServer()).get('/stores/999').expect(404);
+    const response = await request(app.getHttpServer())
+      .get('/stores/999')
+      .expect(404);
 
     expect(response.body.message).toEqual('Store with ID 999 not found');
   });
@@ -79,7 +85,10 @@ describe('StoresController (E2E)', () => {
     mockStoreRepository.findOne.mockResolvedValue(updatedStore);
     mockStoreRepository.update.mockResolvedValue(updatedStore);
 
-    const response = await request(app.getHttpServer()).put('/stores/1').send(updateStoreDto).expect(200);
+    const response = await request(app.getHttpServer())
+      .put('/stores/1')
+      .send(updateStoreDto)
+      .expect(200);
 
     expect(response.body).toEqual(updatedStore);
   });
@@ -93,7 +102,9 @@ describe('StoresController (E2E)', () => {
   it('/stores/:id (DELETE) - store not found', async () => {
     mockStoreRepository.delete.mockResolvedValue({ affected: 0 }); // Store não encontrado
 
-    const response = await request(app.getHttpServer()).delete('/stores/999').expect(404);
+    const response = await request(app.getHttpServer())
+      .delete('/stores/999')
+      .expect(404);
 
     expect(response.body.message).toEqual('Store with ID 999 not found');
   });

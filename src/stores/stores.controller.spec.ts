@@ -1,14 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { StoresController } from './stores.controller';
 import { StoresService } from './stores.service';
-import { Store } from './store.entity';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
 import { NotFoundException } from '@nestjs/common';
 
 describe('StoresController', () => {
   let controller: StoresController;
-  let service: StoresService;
 
   const mockStoreService = {
     create: jest.fn(),
@@ -30,7 +28,6 @@ describe('StoresController', () => {
     }).compile();
 
     controller = module.get<StoresController>(StoresController);
-    service = module.get<StoresService>(StoresService);
   });
 
   describe('findAll', () => {
@@ -74,9 +71,15 @@ describe('StoresController', () => {
     it('should update and return the store', async () => {
       const store = { id: 1, description: 'Test Store' };
       const updateStoreDto: UpdateStoreDto = { description: 'Updated Store' };
-      mockStoreService.update.mockResolvedValue({ ...store, ...updateStoreDto });
+      mockStoreService.update.mockResolvedValue({
+        ...store,
+        ...updateStoreDto,
+      });
 
-      expect(await controller.update(1, updateStoreDto)).toEqual({ ...store, ...updateStoreDto });
+      expect(await controller.update(1, updateStoreDto)).toEqual({
+        ...store,
+        ...updateStoreDto,
+      });
       expect(mockStoreService.update).toHaveBeenCalledWith(1, updateStoreDto);
     });
 

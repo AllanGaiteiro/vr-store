@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Store } from './store.entity';
@@ -16,7 +20,10 @@ export class StoresService {
     try {
       return await this.storeRepository.save(createStoreDto);
     } catch (error) {
-      throw new InternalServerErrorException('Error creating store', error.message);
+      throw new InternalServerErrorException(
+        'Error creating store',
+        error.message,
+      );
     }
   }
 

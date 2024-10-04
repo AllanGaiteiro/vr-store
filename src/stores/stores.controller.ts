@@ -1,9 +1,24 @@
-import { Controller, Get, Post, Param, Body, Put, Delete, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Body,
+  Put,
+  Delete,
+  HttpCode,
+} from '@nestjs/common';
 import { StoresService } from './stores.service';
 import { Store } from './store.entity';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger';
 
 @ApiTags('stores')
 @Controller('stores')
@@ -70,7 +85,7 @@ export class StoresController {
   }
 
   @Delete(':id')
-  @HttpCode(204) 
+  @HttpCode(204)
   @ApiOperation({ summary: 'Remover uma loja pelo ID' })
   @ApiParam({ name: 'id', description: 'O ID da loja a ser removida' })
   @ApiResponse({

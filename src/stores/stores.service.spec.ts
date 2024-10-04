@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { StoresService } from './stores.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Store } from './store.entity';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
@@ -9,7 +8,6 @@ import { NotFoundException } from '@nestjs/common';
 
 describe('StoresService', () => {
   let service: StoresService;
-  let repository: Repository<Store>;
 
   const mockStoreRepository = {
     create: jest.fn(),
@@ -32,7 +30,6 @@ describe('StoresService', () => {
     }).compile();
 
     service = module.get<StoresService>(StoresService);
-    repository = module.get<Repository<Store>>(getRepositoryToken(Store));
   });
 
   describe('create', () => {
@@ -65,7 +62,9 @@ describe('StoresService', () => {
 
       const result = await service.findOne(1);
       expect(result).toEqual(store);
-      expect(mockStoreRepository.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+      expect(mockStoreRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 1 },
+      });
     });
 
     it('should throw a NotFoundException if the store does not exist', async () => {
@@ -81,12 +80,20 @@ describe('StoresService', () => {
       const updateStoreDto: UpdateStoreDto = { description: 'Updated Store' };
       mockStoreRepository.findOne.mockResolvedValue(store);
       mockStoreRepository.update.mockResolvedValue(undefined);
-      mockStoreRepository.findOne.mockResolvedValue({ ...store, ...updateStoreDto });
+      mockStoreRepository.findOne.mockResolvedValue({
+        ...store,
+        ...updateStoreDto,
+      });
 
       const result = await service.update(1, updateStoreDto);
       expect(result).toEqual({ ...store, ...updateStoreDto });
-      expect(mockStoreRepository.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
-      expect(mockStoreRepository.update).toHaveBeenCalledWith(1, updateStoreDto);
+      expect(mockStoreRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 1 },
+      });
+      expect(mockStoreRepository.update).toHaveBeenCalledWith(
+        1,
+        updateStoreDto,
+      );
     });
 
     it('should throw a NotFoundException if the store does not exist', async () => {

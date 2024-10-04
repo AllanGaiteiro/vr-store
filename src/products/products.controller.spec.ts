@@ -6,7 +6,6 @@ import { CreateProductDto } from './dto/create-product.dto';
 
 describe('ProductsController', () => {
   let controller: ProductsController;
-  let service: ProductsService;
 
   const mockProductService = {
     findAll: jest.fn(),
@@ -26,7 +25,6 @@ describe('ProductsController', () => {
     }).compile();
 
     controller = module.get<ProductsController>(ProductsController);
-    service = module.get<ProductsService>(ProductsService);
   });
 
   describe('findAll', () => {

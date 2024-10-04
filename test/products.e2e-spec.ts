@@ -34,19 +34,27 @@ describe('ProductsController (E2E)', () => {
     const result = [{ id: 1, name: 'Product 1' }];
     mockProductRepository.find.mockResolvedValue(result);
 
-    const response = await request(app.getHttpServer()).get('/products').expect(200);
-    
+    const response = await request(app.getHttpServer())
+      .get('/products')
+      .expect(200);
+
     expect(response.body).toEqual(result);
   });
 
   it('/products (POST) - successful creation', async () => {
-    const createProductDto = { name: 'Product 1', description: 'Description 1' };
+    const createProductDto = {
+      name: 'Product 1',
+      description: 'Description 1',
+    };
     const savedProduct = { id: 1, ...createProductDto };
 
     mockProductRepository.save.mockResolvedValue(savedProduct);
 
-    const response = await request(app.getHttpServer()).post('/products').send(createProductDto).expect(201);
-    
+    const response = await request(app.getHttpServer())
+      .post('/products')
+      .send(createProductDto)
+      .expect(201);
+
     expect(response.body).toEqual(savedProduct);
   });
 
@@ -59,8 +67,10 @@ describe('ProductsController (E2E)', () => {
   it('/products/:id (DELETE) - product not found', async () => {
     mockProductRepository.delete.mockResolvedValue({ affected: 0 }); // Produto não encontrado
 
-    const response = await request(app.getHttpServer()).delete('/products/999').expect(404);
-    
+    const response = await request(app.getHttpServer())
+      .delete('/products/999')
+      .expect(404);
+
     expect(response.body.message).toEqual('Product with ID 999 not found');
   });
 });
