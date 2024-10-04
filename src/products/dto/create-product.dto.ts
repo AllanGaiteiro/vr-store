@@ -5,14 +5,12 @@ import { Transform } from 'class-transformer';
 export class CreateProductDto {
   @ApiProperty({
     description: 'Descrição do produto',
-    example: 'Produto A',
   })
   @IsNotEmpty({ message: 'A descrição do produto é obrigatória.' })
   description: string;
 
   @ApiProperty({
     description: 'Custo do produto',
-    example: 10.22,
   })
   @Transform(({ value }) =>
     typeof value === 'string' ? parseFloat(value) : value,

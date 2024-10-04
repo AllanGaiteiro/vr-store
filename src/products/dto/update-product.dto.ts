@@ -5,7 +5,6 @@ import { Transform } from 'class-transformer';
 export class UpdateProductDto {
   @ApiProperty({
     description: 'Nova descrição do produto (opcional)',
-    example: 'Produto B',
     required: false,
   })
   @IsOptional()
@@ -14,7 +13,6 @@ export class UpdateProductDto {
 
   @ApiProperty({
     description: 'Novo custo do produto (opcional)',
-    example: 15.21,
     required: false,
   })
   @Transform(({ value }) =>
