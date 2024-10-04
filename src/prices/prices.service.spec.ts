@@ -12,7 +12,21 @@ import { UpdatePriceDto } from './dto/update-price.dto';
 describe('PricesService', () => {
   let service: PricesService;
 
+  const mockQueryBuilder = {
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    andWhere: jest.fn().mockReturnThis(),
+    select: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    getManyAndCount: jest
+      .fn()
+      .mockResolvedValue([[{ id: 1, priceValue: 100 }], 1]),
+    getMany: jest.fn().mockResolvedValue([{ id: 1, priceValue: 100 }]),
+    skip: jest.fn().mockReturnThis(),
+    take: jest.fn().mockReturnThis(),
+  };
+
   const mockPriceRepository = {
+    createQueryBuilder: jest.fn(() => mockQueryBuilder),
     findOne: jest.fn(),
     create: jest.fn(),
     save: jest.fn(),
@@ -53,10 +67,18 @@ describe('PricesService', () => {
 
   describe('create', () => {
     it('should create and return a price', async () => {
-      const createPriceDto: CreatePriceDto = { productId: 1, storeId: 1, priceValue: 100 };
+      const createPriceDto: CreatePriceDto = {
+        productId: 1,
+        storeId: 1,
+        priceValue: 100,
+      };
       const product = { id: 1, description: 'Test Product' } as Product;
       const store = { id: 1, description: 'Test Store' } as Store;
-      const savedPrice = { priceValue: createPriceDto.priceValue, product, store } as Price;
+      const savedPrice = {
+        priceValue: createPriceDto.priceValue,
+        product,
+        store,
+      } as Price;
 
       mockProductRepository.findOne.mockResolvedValue(product);
       mockStoreRepository.findOne.mockResolvedValue(store);
@@ -64,35 +86,54 @@ describe('PricesService', () => {
       mockPriceRepository.save.mockResolvedValue(savedPrice);
 
       expect(await service.create(createPriceDto)).toBe(savedPrice);
-      expect(mockProductRepository.findOne).toHaveBeenCalledWith({ where: { id: createPriceDto.productId } });
-      expect(mockStoreRepository.findOne).toHaveBeenCalledWith({ where: { id: createPriceDto.storeId } });
+      expect(mockProductRepository.findOne).toHaveBeenCalledWith({
+        where: { id: createPriceDto.productId },
+      });
+      expect(mockStoreRepository.findOne).toHaveBeenCalledWith({
+        where: { id: createPriceDto.storeId },
+      });
       expect(mockPriceRepository.save).toHaveBeenCalledWith(savedPrice);
     });
 
     it('should throw NotFoundException if product not found', async () => {
-      const createPriceDto: CreatePriceDto = { productId: 1, storeId: 1, priceValue: 100 };
+      const createPriceDto: CreatePriceDto = {
+        productId: 1,
+        storeId: 1,
+        priceValue: 100,
+      };
       mockProductRepository.findOne.mockResolvedValue(null);
 
-      await expect(service.create(createPriceDto)).rejects.toThrow(NotFoundException);
+      await expect(service.create(createPriceDto)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw NotFoundException if store not found', async () => {
-      const createPriceDto: CreatePriceDto = { productId: 1, storeId: 1, priceValue: 100 };
+      const createPriceDto: CreatePriceDto = {
+        productId: 1,
+        storeId: 1,
+        priceValue: 100,
+      };
       const product = { id: 1, description: 'Test Product' } as Product;
       mockProductRepository.findOne.mockResolvedValue(product);
       mockStoreRepository.findOne.mockResolvedValue(null);
 
-      await expect(service.create(createPriceDto)).rejects.toThrow(NotFoundException);
+      await expect(service.create(createPriceDto)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
   describe('findAll', () => {
     it('should return an array of prices', async () => {
-      const result = [{ id: 1, priceValue: 100 } as Price];
+      const result = {
+        data: [{ id: 1, priceValue: 100 }],
+        length: 1,
+        limit: 1,
+        page: 0,
+      };
       mockPriceRepository.find.mockResolvedValue(result);
-
-      expect(await service.findAll()).toBe(result);
-      expect(mockPriceRepository.find).toHaveBeenCalledWith({ relations: ['product', 'store'] });
+      expect(await service.findAll()).toStrictEqual(result);
     });
   });
 
@@ -101,13 +142,15 @@ describe('PricesService', () => {
       const price = { id: 1, priceValue: 100 } as Price;
       mockPriceRepository.findOne.mockResolvedValue(price);
 
-      expect(await service.findOne(1)).toBe(price);
-      expect(mockPriceRepository.findOne).toHaveBeenCalledWith({ where: { id: 1 }, relations: ['product', 'store'] });
+      expect(await service.findOne(1)).toStrictEqual(price);
+      expect(mockPriceRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 1 },
+        relations: ['product', 'store'],
+      });
     });
 
     it('should throw NotFoundException if price not found', async () => {
       mockPriceRepository.findOne.mockResolvedValue(null);
-
       await expect(service.findOne(1)).rejects.toThrow(NotFoundException);
     });
   });
@@ -118,17 +161,28 @@ describe('PricesService', () => {
       const price = { id: 1, priceValue: 100 } as Price;
       mockPriceRepository.findOne.mockResolvedValue(price);
       mockPriceRepository.update.mockResolvedValue(undefined);
-      mockPriceRepository.findOne.mockResolvedValue({ ...price, ...updatePriceDto });
+      mockPriceRepository.findOne.mockResolvedValue({
+        ...price,
+        ...updatePriceDto,
+      });
 
-      expect(await service.update(1, updatePriceDto)).toEqual({ ...price, ...updatePriceDto });
-      expect(mockPriceRepository.update).toHaveBeenCalledWith(1, updatePriceDto);
+      expect(await service.update(1, updatePriceDto)).toEqual({
+        ...price,
+        ...updatePriceDto,
+      });
+      expect(mockPriceRepository.update).toHaveBeenCalledWith(
+        1,
+        updatePriceDto,
+      );
     });
 
     it('should throw NotFoundException if price not found', async () => {
       const updatePriceDto: UpdatePriceDto = { priceValue: 120 };
       mockPriceRepository.findOne.mockResolvedValue(null);
 
-      await expect(service.update(1, updatePriceDto)).rejects.toThrow(NotFoundException);
+      await expect(service.update(1, updatePriceDto)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 

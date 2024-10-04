@@ -14,45 +14,55 @@ export class ProductsService {
   ) {}
 
   async findAll(
-    filters: FilterProductDto,
-    page: number,
-    limit: number,
+    filters?: FilterProductDto,
+    page?: number,
+    limit?: number,
   ): Promise<{ data: Product[]; length: number; page: number; limit: number }> {
     const query = this.productRepository.createQueryBuilder('product');
 
     // Aplica os filtros dinamicamente
-    if (filters.productId) {
+    if (filters?.productId) {
       query.andWhere('product.id = :productId', {
         productId: filters.productId,
       });
     }
 
-    if (filters.description) {
+    if (filters?.description) {
       query.andWhere('product.description LIKE :description', {
         description: `%${filters.description}%`,
       });
     }
 
-    if (filters.minCost) {
+    if (filters?.minCost) {
       query.andWhere('product.cost >= :minCost', { minCost: filters.minCost });
     }
 
-    if (filters.maxCost) {
+    if (filters?.maxCost) {
       query.andWhere('product.cost <= :maxCost', { maxCost: filters.maxCost });
     }
 
-    // Paginação
-    const [result, length] = await query
-      .skip((page - 1) * limit)
-      .take(limit)
-      .getManyAndCount();
-
-    return {
-      data: result,
-      length,
-      page,
-      limit,
+    const result = {
+      data: [],
+      length: 0,
+      page: page || 0,
+      limit: limit || 0,
     };
+
+    if (page && limit) {
+      const [data, length] = await query
+        .skip((page - 1) * limit)
+        .take(limit)
+        .getManyAndCount();
+      result.data = data;
+      result.length = length;
+    } else {
+      const data = await query.getMany();
+      result.data = data;
+      result.length = data.length;
+      result.limit = data.length;
+    }
+
+    return result;
   }
 
   async findOne(id: number): Promise<Product> {

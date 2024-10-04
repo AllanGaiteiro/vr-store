@@ -94,10 +94,18 @@ describe('PricesController', () => {
 
   describe('create', () => {
     it('should create and return a price', async () => {
-      const createPriceDto: CreatePriceDto = { productId: 1, storeId: 1, priceValue: 100 };
+      const createPriceDto: CreatePriceDto = {
+        productId: 1,
+        storeId: 1,
+        priceValue: 100,
+      };
       const product = { id: 1, description: 'Test Product' } as Product;
       const store = { id: 1, description: 'Test Store' } as Store;
-      const savedPrice = { priceValue: createPriceDto.priceValue, product, store } as Price;
+      const savedPrice = {
+        priceValue: createPriceDto.priceValue,
+        product,
+        store,
+      } as Price;
 
       mockPriceService.create.mockResolvedValue(savedPrice);
 

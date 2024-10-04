@@ -50,9 +50,9 @@ export class PricesService {
   }
 
   async findAll(
-    filters: FilterPricesDto,
-    page: number,
-    limit: number,
+    filters?: FilterPricesDto,
+    page?: number,
+    limit?: number,
   ): Promise<{ data: Price[]; length: number; page: number; limit: number }> {
     try {
       const query = this.priceRepository
@@ -61,29 +61,29 @@ export class PricesService {
         .leftJoinAndSelect('price.store', 'store');
 
       // Aplica os filtros dinamicamente
-      if (filters.productId) {
+      if (filters?.productId) {
         query.andWhere('product.id = :productId', {
           productId: filters.productId,
         });
       }
 
-      if (filters.storeId) {
+      if (filters?.storeId) {
         query.andWhere('store.id = :storeId', { storeId: filters.storeId });
       }
 
-      if (filters.description) {
+      if (filters?.description) {
         query.andWhere('product.description LIKE :description', {
           description: `%${filters.description}%`,
         });
       }
 
-      if (filters.minCost) {
+      if (filters?.minCost) {
         query.andWhere(`product.cost >= :minCost`, {
           minCost: filters.minCost,
         });
       }
 
-      if (filters.maxCost) {
+      if (filters?.maxCost) {
         query.andWhere(`product.cost <= :maxCost`, {
           maxCost: filters.maxCost,
         });
@@ -105,17 +105,27 @@ export class PricesService {
         query.andWhere(`price.id = (${subQuery.getQuery()})`);
       }
 
-      const [result, length] = await query
-        .skip((page - 1) * limit)
-        .take(limit)
-        .getManyAndCount();
-
-      return {
-        data: result,
-        length,
-        page,
-        limit,
+      const result = {
+        data: [],
+        length: 0,
+        page: page || 0,
+        limit: limit || 0,
       };
+      if (page && limit) {
+        const [data, length] = await query
+          .skip((page - 1) * limit)
+          .take(limit)
+          .getManyAndCount();
+        result.data = data;
+        result.length = length;
+      } else {
+        const data = await query.getMany();
+        result.data = data;
+        result.length = data.length;
+        result.limit = data.length;
+      }
+
+      return result;
     } catch (error) {
       console.error('Error fetching prices:', error);
       throw new InternalServerErrorException('Error fetching prices');
@@ -127,13 +137,13 @@ export class PricesService {
     filters: FilterPricesDto,
     queryName: 'price' | 'subPrice',
   ) {
-    if (filters.minPriceValue) {
+    if (filters?.minPriceValue) {
       query.andWhere(`${queryName}.priceValue >= :minPriceValue`, {
         minPriceValue: filters.minPriceValue,
       });
     }
 
-    if (filters.maxPriceValue) {
+    if (filters?.maxPriceValue) {
       query.andWhere(`${queryName}.priceValue <= :maxPriceValue`, {
         maxPriceValue: filters.maxPriceValue,
       });

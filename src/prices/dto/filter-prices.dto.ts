@@ -48,5 +48,5 @@ export class FilterPricesDto {
     example: false,
     type: Boolean,
   })
-  singleItemPerProduct: boolean;
+  singleItemPerProduct?: boolean;
 }
